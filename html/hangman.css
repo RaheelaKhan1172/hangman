@@ -1,0 +1,14 @@
+body {
+  margin-top:10px;
+  text-align:center;
+}
+
+progress {    /* styling of the progress bar */
+  color:#830300; /* Internet Explorer 10 and later*/
+  -webkit-appearance: none;  /* override default style */
+}
+progress::-webkit-progress-value { /* Chrome */
+    background-color: #830300;
+}
+progress::-moz-progress-bar {   /*Firefox */
+  background-color:#830300;
