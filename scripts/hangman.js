@@ -3,6 +3,7 @@ var game = {
   wordToGuess: "",
   wrongGuesses: "",
   wrongGuessCount: 0,
+  winCount:0,
   myCanvas: document.getElementById("myCanvas"),
   context: myCanvas.getContext('2d')
 };
@@ -14,34 +15,74 @@ game.drawLine = function(context,from,to) {
   context.stroke();        
 }
 
+game.drawStar = function(contx,conty,point,outerRadius,innerRadius) {
+//  game.context.clearRect(1,1,100,10); 
+  var rot = Math.PI/2*3;
+  game.context.clearRect(0,0,400,400);
+  var x = contx;
+  var y=conty;
+
+  var step=Math.PI/point;
+
+  game.context.strokeStyle="#000";
+  game.context.beginPath();
+  game.context.moveTo(contx,conty-outerRadius)
+  
+  for(var i = 0; i < point;i++) {
+    x=contx+Math.cos(rot)*outerRadius;
+    y=conty+Math.sin(rot)*outerRadius;
+    game.context.lineTo(x,y);
+    rot+=step;
+
+    x = contx+Math.cos(rot)*innerRadius;
+    y=conty+Math.sin(rot)*innerRadius;
+    game.context.lineTo(x,y)
+    rot+=step;
+  }
+  game.context.lineTo(contx,conty-outerRadius);
+  game.context.stroke();
+  game.context.closePath();
+  game.context.lineWidth=1;
+  game.context.strokeStyle="blue";
+  game.context.stroke();
+  game.context.fillStyle="white";
+  game.context.fill();
+}
+  
+
+
 game.lose = function() {
   game.drawLine(game.context,[145,130],[160,170]);
   $("#guess").off("input");
   
   $("#display").text("The word was:" + game.guessMe); 
   $("#wrong").text("You Lose! Press restart if you would like to play again!");
-  //score will also be decremented 
+  //score will also be decremented
+  localStorage['scoreVal'] = Number(localStorage.getItem('scoreVal')) - 5;
+  $("#score").text(localStorage['scoreVal']); 
 }
 
 game.win = function() {
+  
   $("#guess").off("input");
   $("#wrong").text("Congratulations! You win!");
+    game.drawStar(165,50,2,3,5);
   
   $("input").on("input", function() {
     $("#wrong").text("Press restart to play again");
   });
-
+  localStorage['scoreVal'] = Number(localStorage.getItem('scoreVal')) + 5;
+  $("#score").text(localStorage['scoreVal']);
 }
-  
-
 
 game.drawCanvas = function() {
-  game.myCanvas.width = game.myCanvas.width;
+ 
+  game.context.clearRect(0,0,400,400);
   game.context.lineWidth = 10;
   game.context.strokeStyle = 'green';
   game.context.font = 'bold 24px Optimer, Arial, Helvetica, sans-serif';
   game.context.fillStyle = 'red';
-  
+ 
   //guess count and resulting drawing 
   if (game.wrongGuessCount > 0) {
     game.context.strokeStyle = "#A52A2A";
@@ -81,9 +122,7 @@ game.drawCanvas = function() {
 }
    
 
-//api to get word
 game.getWord = function() {
-  console.log('im git');
   var request = "http://randomword.setgetgo.com/get.php";
   $.ajax({
     type: "GET",
@@ -101,7 +140,6 @@ game.randomWord = function(data) {
 
 game.restart = function() {
   game.getWord();
-  console.log(game.wordToGuess);
   game.wrongGuesses = "";
   game.wrongGuessCount = 0;
   game.guessMe = game.wordToGuess; //ok, the word changed when inSession is called, why? temp fix, store current result in var
@@ -114,11 +152,10 @@ game.restart = function() {
   $("#guess").val("");
   $("#guess").focus();
   game.play();
-  console.log('word', game.wordToGuess);
+  console.log('word', game.wordToGuess,game.guessMe);
 };
 
 game.play = function() {
-  console.log('why',game.wordToGuess);
 
   $("input").off("input");
   $("input").on("input", game.inSession);
@@ -126,7 +163,6 @@ game.play = function() {
 };
 
 game.inSession = function() {
-  console.log('right',game.wordToGuess);
   var userGuess = $("input").val().toLowerCase();
   var position = game.guessMe.indexOf(userGuess);
     if(position >= 0) {
@@ -155,11 +191,14 @@ game.inSession = function() {
     };  
   };
 };
-
-
+console.log(game.winCount);
+console.log(game.guessMe);
 $(document).ready(function() {
    game.restart();
- // $("#guess").on("input",game.play);
+  $("#score").text(localStorage['scoreVal']);
+  $("#guess").on("input",game.play);
+  $("input").off("input");
   $("button").click(game.restart);
 });
 
+localStorage.getItem('scoreVal') || localStorage.setItem('scoreVal',0);

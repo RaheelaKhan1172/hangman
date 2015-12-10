@@ -1,0 +1,8 @@
+CACHE MANIFEST
+../scripts/hangman.js
+../scripts/jquery-1.11.3.js
+
+NETWORK
+*
+http://*
+https://* 
