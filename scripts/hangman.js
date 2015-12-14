@@ -121,7 +121,25 @@ game.drawCanvas = function() {
   }
 }
    
-
+game.getDefinition = function() {
+  var request = new XMLHttpRequest();
+  console.log('in');
+  var url = 'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/test?key=5b05174c-3128-421d-9d5f-1c9ddea136d5'
+  if (request) {
+    request.open('GET',url, true);
+  //  request.withCredentials = true;
+    request.send();
+    request.onreadystatechange = function() {
+      if (request.readyState === 4 && request.status === 200) {
+        console.log('meep',request.status);
+        document.getElementById("response").innerHTML = request.responseText;
+      
+        }  else {
+      console.log('stat',request.status);
+  }
+}
+} 
+}
 game.getWord = function() {
   var request = "http://randomword.setgetgo.com/get.php";
   $.ajax({
@@ -145,7 +163,8 @@ game.restart = function() {
   game.guessMe = game.wordToGuess; //ok, the word changed when inSession is called, why? temp fix, store current result in var
   game.dashDisplay = '-'.repeat(game.guessMe.length);
   game.drawCanvas();
-
+  game.getDefinition();
+  console.log(game.getDefinition);
   $("#display").text(game.dashDisplay); 
   $("progress").val('0');
   $("#wrong").text('');

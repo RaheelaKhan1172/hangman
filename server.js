@@ -20,6 +20,9 @@ const SUPPORTED_TYPE = {
     '.json': {
       'Content-Type': 'application/json; charset = UTF-8'
     },
+    '.xml': {
+      'Content-Type': 'application/xml; charset=UTF-8'
+    },
     '.gif': {
       'Content-Type': 'image/gif'
     }
